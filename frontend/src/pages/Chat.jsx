@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { useAuth } from '../context/AuthContext'
+import { API_URL, WS_URL } from '../config'
 
 export default function Chat() {
   const { user, logout } = useAuth()
@@ -36,24 +37,24 @@ export default function Chat() {
   }, [selectedRoom])
 
   const fetchRooms = async () => {
-    const res = await axios.get('http://localhost:8000/api/chat/rooms')
+    const res = await axios.get(`${API_URL}/api/chat/rooms`)
     setRooms(res.data)
     if (res.data.length > 0) setSelectedRoom(res.data[0])
   }
 
   const fetchMessages = async (roomId) => {
-    const res = await axios.get(`http://localhost:8000/api/chat/rooms/${roomId}/messages`)
+    const res = await axios.get(`${API_URL}/api/chat/rooms/${roomId}/messages`)
     setMessages(res.data)
   }
 
   const fetchUsers = async () => {
-    const res = await axios.get('http://localhost:8000/api/auth/users')
+    const res = await axios.get(`${API_URL}/api/auth/users`)
     setOnlineUsers(res.data)
   }
 
   const connectWebSocket = (roomId) => {
     if (wsRef.current) wsRef.current.close()
-    const ws = new WebSocket(`ws://localhost:8000/api/chat/ws/${roomId}/${user.username}`)
+    const ws = new WebSocket(`${WS_URL}/api/chat/ws/${roomId}/${user.username}`)
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data)
       setMessages(prev => [...prev, data])
@@ -73,7 +74,7 @@ export default function Chat() {
 
   const createRoom = async () => {
     if (!newRoomName.trim()) return
-    await axios.post('http://localhost:8000/api/chat/rooms', {
+    await axios.post(`${API_URL}/api/chat/rooms`, {
       name: newRoomName,
       description: ''
     })

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { useAuth } from '../context/AuthContext'
+import { API_URL } from '../config'
 
 export default function Register() {
   const [form, setForm] = useState({ username: '', email: '', password: '' })
@@ -14,7 +15,7 @@ export default function Register() {
     setLoading(true)
     setError('')
     try {
-      const res = await axios.post('http://localhost:8000/api/auth/register', form)
+      const res = await axios.post(`${API_URL}/api/auth/register`, form)
       login(res.data)
       navigate('/chat')
     } catch (err) {
